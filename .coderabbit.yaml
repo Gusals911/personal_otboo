@@ -1,0 +1,29 @@
+# .coderabbit.yaml
+
+language: "ko-KR"
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  review_status: true
+  review_details: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    base_branches:
+      - "dev"
+      - "release"
+    labels:
+      - "!wip"
+
+  path_filters:
+    - "!build/**"
+    - "!.gradle/**"
+    - "!gradle/wrapper/gradle-wrapper.jar"
+    - "!src/main/resources/static/assets/**"
+
+chat:
+  auto_reply: true
