@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: otboo-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: otboo
+      DB_USERNAME: otboo
+      DB_PASSWORD: otboo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16
+    container_name: otboo-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: otboo
+      POSTGRES_USER: otboo
+      POSTGRES_PASSWORD: otboo
+    volumes:
+      - otboo-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U otboo -d otboo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  otboo-postgres-data:

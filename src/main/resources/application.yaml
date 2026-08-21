@@ -1,1 +1,9 @@
-spring.application.name=otboo
+spring:
+  application:
+    name: otboo
+
+  profiles:
+    default: local
+
+server:
+  port: 8080
