@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - dev
+      - release
       - main
 
 permissions:
