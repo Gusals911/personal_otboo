@@ -9,16 +9,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // 서비스 예외 처리
     @ExceptionHandler(OtbooException.class)
     public ResponseEntity<ErrorResponse> handleOtbooException(OtbooException exception) {
         ErrorCode errorCode = exception.getErrorCode();
+        log.warn(
+                "Business exception occurred. errorCode={}, message={}, details={}",
+                errorCode.name(),
+                exception.getMessage(),
+                exception.getDetails()
+        );
 
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
@@ -49,6 +57,11 @@ public class GlobalExceptionHandler {
             details.putIfAbsent(field, message);
         }
 
+        log.warn(
+                "Validation failed. errorCode={}, details={}",
+                errorCode.name(),
+                details
+        );
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
                 errorCode.name(),
@@ -76,6 +89,11 @@ public class GlobalExceptionHandler {
             details.putIfAbsent(field, message);
         }
 
+        log.warn(
+                "Constraint violation occurred. errorCode={}, details={}",
+                errorCode.name(),
+                details
+        );
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
                 errorCode.name(),
@@ -102,6 +120,11 @@ public class GlobalExceptionHandler {
                 ? null
                 : exception.getRequiredType().getSimpleName());
 
+        log.warn(
+                "Method argument type mismatch. errorCode={}, details={}",
+                errorCode.name(),
+                details
+        );
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
                 errorCode.name(),
@@ -119,6 +142,11 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException exception
     ) {
         ErrorCode errorCode = ErrorCode.COMMON_INVALID_REQUEST;
+        log.warn(
+                "HTTP message not readable. errorCode={}, message={}",
+                errorCode.name(),
+                exception.getMessage()
+        );
 
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
@@ -135,7 +163,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         ErrorCode errorCode = ErrorCode.COMMON_INTERNAL_SERVER_ERROR;
-
+        log.error(
+                "Unexpected exception occurred. errorCode={}",
+                errorCode.name(),
+                exception
+        );
         ErrorResponse response = new ErrorResponse(
                 exception.getClass().getSimpleName(),
                 errorCode.name(),
